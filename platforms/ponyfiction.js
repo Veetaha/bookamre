@@ -8,35 +8,36 @@ async function main() {
         apiEndpoint: "https://derpibooru.org/api/v1/json",
     }
 
-    let rootTextElem = document.getElementsByClassName("chapter-text")[0];
+    let rootElem = document.getElementsByClassName("chapter-text")[0];
 
     let totalWords = 0;
     let chunkWordsNumber = 0;
 
     let toInsert = [];
 
-    for (const textElem of rootTextElem.children) {
-        const words = splitWords(textElem.innerText);
+    for (const textNode of flattenNode(rootElem)) {
+        const words = splitWords(textNode.textContent);
 
         let milestoneLimit = toInsert.length === 0 ? offset : limit;
 
         if (chunkWordsNumber + words.length > milestoneLimit) {
             chunkWordsNumber = words.length;
-            toInsert.push([createMilestoneElement(totalWords), textElem]);
+            toInsert.push([createMilestoneElement(totalWords), textNode]);
         }
 
         chunkWordsNumber += words.length;
         totalWords += words.length;
 
-        if (textElem.nextElementSibling?.tagName == "HR") {
-            textElem.nextElementSibling.textContent = `{Chunk ~${totalWords} words} `;
+        if (textNode.nextElementSibling?.tagName == "HR") {
+            textNode.nextElementSibling.textContent = `{Chunk ~${totalWords} words} `;
         }
     }
 
     toInsert.push([createMilestoneElement(totalWords), null])
 
     for (const [milestone, elem] of toInsert) {
-        rootTextElem.insertBefore(await milestone, elem);
+        const parent = elem?.parentNode ?? rootElem;
+        parent.insertBefore(await milestone, elem);
     }
 
     console.log(`Total words: ${totalWords}`);
@@ -71,6 +72,17 @@ async function main() {
     /** @param {string} text */
     function splitWords(text) {
         return String(text).match(/((?:[a-фяёґєї]|\w)+)/gi) ?? [];
+    }
+
+    /**
+     *  @param {Node} node
+     *  @returns {Node[]}
+     */
+    function flattenNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            return node;
+        }
+        return [...node.childNodes].flatMap(flattenNode);
     }
 }
 
