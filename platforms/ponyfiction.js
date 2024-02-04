@@ -4,7 +4,7 @@ async function main() {
             background-color: var(--background-color);
         }
         .chapter-text {
-            color: #fff;
+            color: #d3d3d3;
         }
         :root {
             --background-color: #1E1E1E;
