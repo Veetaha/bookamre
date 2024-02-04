@@ -1,6 +1,6 @@
 async function main() {
     document.head.appendChild(document.createElement("style")).textContent = `
-        .container {
+        .container, .story-panel {
             background-color: var(--background-color);
         }
         .chapter-text {
@@ -9,8 +9,10 @@ async function main() {
         :root {
             --background-color: #1E1E1E;
         }
+        body {
+            background-image: none
+        }
     `;
-    document.body.style.backgroundImage = "none";
 
     let { offset, capacity, readers, query } = ctx;
 
