@@ -1,4 +1,17 @@
 async function main() {
+    document.head.appendChild(document.createElement("style")).textContent = `
+        .container {
+            background-color: var(--background-color);
+        }
+        .chapter-text {
+            color: #fff;
+        }
+        :root {
+            --background-color: #1E1E1E;
+        }
+    `;
+    document.body.style.backgroundImage = "none";
+
     let { offset, capacity, readers, query } = ctx;
 
     let limit = Math.floor(capacity / readers);
