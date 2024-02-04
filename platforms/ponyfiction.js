@@ -3,7 +3,7 @@ async function main() {
         .container, .story-panel {
             background-color: var(--background-color);
         }
-        .chapter-text {
+        .chapter-text, .chapter-text > hr {
             color: #d3d3d3;
         }
         :root {
