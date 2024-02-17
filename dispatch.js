@@ -1,6 +1,6 @@
-function main() {
+async function main() {
+
     const mapping = {
-        'docs.google.com': 'google-docs',
         'ponyfiction.org': 'ponyfiction',
     };
 
@@ -10,9 +10,16 @@ function main() {
         throw new Error(`Unsupported host: ${window.location.hostname}`);
     }
 
-    fetch(`https://raw.githubusercontent.com/Veetaha/bookamre/v1/platforms/${platform}.js`)
-        .then(response => response.text())
-        .then(code => new Function("ctx", code)(ctx))
+    const root = "https://raw.githubusercontent.com/Veetaha/bookamre/master";
+    const scripts = ["lib", `platforms/${platform}`];
+
+    const codeParts = scripts.map(
+        script => fetch(`${root}/${script}.js`).then(response => response.text())
+    );
+
+    const code = await Promise.all(codeParts);
+
+    new Function("ctx", code.join("\n"))(globalCtx);
 }
 
 main()
