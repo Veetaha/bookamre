@@ -19,7 +19,7 @@ async function main() {
 
     const code = await Promise.all(codeParts);
 
-    new Function("ctx", code.join("\n"))(ctx);
+    new Function(code.join("\n"))();
 }
 
 main()
