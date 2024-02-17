@@ -1,6 +1,6 @@
 document.ctx = {
     offset: 0,
-    capacity: 10000,
+    limit: 3500,
     query: "mare,pony,score.gt:850,cute,!human,!anime,!eg",
 }
 
