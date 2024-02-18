@@ -6,4 +6,4 @@ document.ctx = {
 
 fetch("https://raw.githubusercontent.com/Veetaha/bookamre/master/dispatch.js")
     .then(response => response.text())
-    .then(code => new Function("ctx", code)(globalCtx))
+    .then(code => new Function(code)())

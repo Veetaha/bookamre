@@ -2,6 +2,7 @@ async function main() {
 
     const mapping = {
         'ponyfiction.org': 'ponyfiction',
+        '': 'fb2',
     };
 
     const platform = mapping[window.location.hostname];
