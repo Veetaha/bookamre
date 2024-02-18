@@ -106,7 +106,6 @@ async function chunkTextUnderNode(rootElem, ctx = globalCtx()) {
         const words = splitWords(textNode.textContent);
 
         if (milestones.length > 0) {
-            console.log(milestones.length);
             const [label, milestoneLimit] = milestones[milestones.length - 1];
 
             if (chunkWordsNumber + words.length > milestoneLimit) {
