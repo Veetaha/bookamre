@@ -48,9 +48,12 @@ function flattenNode(node) {
 }
 
 
-/** @param {number} wordsNumber */
-async function createMilestoneElement(wordsNumber) {
-    const milestone = createMilestoneMarkerTextElement(wordsNumber);
+/**
+ * @param {number} wordsNumber
+ * @param {string} label
+ */
+async function createMilestoneElement(wordsNumber, label) {
+    const milestone = createMilestoneMarkerTextElement(wordsNumber, label);
 
     const mediaSrc = await getRandomImage();
 
@@ -71,12 +74,15 @@ async function createMilestoneElement(wordsNumber) {
     return div;
 }
 
-/** @param {number} wordsNumber */
-function createMilestoneMarkerTextElement(wordsNumber) {
+/**
+ * @param {number} wordsNumber
+ * @param {string} label
+ */
+function createMilestoneMarkerTextElement(wordsNumber, label) {
     const milestone = document.createElement("div");
     milestone.style.fontFamily = "Consolas";
     milestone.style.fontWeight = "bold";
-    milestone.innerText = `{Milestone ~${wordsNumber} words}`;
+    milestone.innerText = `{${label} ~${wordsNumber} words}`;
     return milestone;
 }
 
@@ -86,6 +92,7 @@ function createMilestoneMarkerTextElement(wordsNumber) {
 async function chunkTextUnderNode(rootElem, ctx = globalCtx()) {
     let totalWords = 0;
     let chunkWordsNumber = 0;
+    let actualOffset = 0;
 
     let toInsert = [];
 
@@ -104,7 +111,16 @@ async function chunkTextUnderNode(rootElem, ctx = globalCtx()) {
             if (chunkWordsNumber + words.length > milestoneLimit) {
                 totalMilestones -= 1;
                 chunkWordsNumber = words.length;
-                toInsert.push([createMilestoneElement(totalWords), textNode]);
+
+                let label = "Milestone";
+
+                if (offset !== 0 && totalMilestones === 1) {
+                    label = "Offset";
+                    actualOffset = totalWords;
+                }
+
+                const milestone = createMilestoneElement(totalWords, label);
+                toInsert.push([milestone, textNode]);
             }
 
             chunkWordsNumber += words.length;
@@ -126,7 +142,7 @@ async function chunkTextUnderNode(rootElem, ctx = globalCtx()) {
 
     console.log(`Total words: ${totalWords}`);
 
-    return totalWords;
+    return totalWords - actualOffset;
 }
 
 console.log("Using parameters:", globalCtx());
