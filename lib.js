@@ -91,17 +91,25 @@ async function chunkTextUnderNode(rootElem, ctx = globalCtx()) {
 
     let { offset, limit } = ctx;
 
+    // Two milestones when an offset is used: one for the offset start, and one
+    // for the actual limit.
+    let totalMilestones = offset === 0 ? 2 : 1;
+
     for (const textNode of flattenNode(rootElem)) {
         const words = splitWords(textNode.textContent);
 
-        const milestoneLimit = toInsert.length === 0 ? offset : limit;
+        if (totalMilestones > 0) {
+            const milestoneLimit = toInsert.length === 0 ? offset : limit;
 
-        if (chunkWordsNumber + words.length > milestoneLimit) {
-            chunkWordsNumber = words.length;
-            toInsert.push([createMilestoneElement(totalWords), textNode]);
+            if (chunkWordsNumber + words.length > milestoneLimit) {
+                totalMilestones -= 1;
+                chunkWordsNumber = words.length;
+                toInsert.push([createMilestoneElement(totalWords), textNode]);
+            }
+
+            chunkWordsNumber += words.length;
         }
 
-        chunkWordsNumber += words.length;
         totalWords += words.length;
 
         if (textNode.nextElementSibling?.tagName == "HR") {
