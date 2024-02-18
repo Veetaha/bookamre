@@ -1,7 +1,7 @@
 function globalCtx() {
     return document.ctx ?? {
-        offset: 0,
-        limit: 5000,
+        offset: 3365,
+        limit: 3500,
     };
 }
 
@@ -93,31 +93,30 @@ async function chunkTextUnderNode(rootElem, ctx = globalCtx()) {
     let totalWords = 0;
     let chunkWordsNumber = 0;
     let actualOffset = 0;
-
-    let toInsert = [];
-
-    let { offset, limit } = ctx;
+    const toInsert = [];
 
     // Two milestones when an offset is used: one for the offset start, and one
     // for the actual limit.
-    let totalMilestones = offset === 0 ? 2 : 1;
+    const milestones = [
+        ["Milestone", ctx.limit],
+        ["Offset", ctx.offset]
+    ];
 
     for (const textNode of flattenNode(rootElem)) {
         const words = splitWords(textNode.textContent);
 
-        if (totalMilestones > 0) {
-            const milestoneLimit = toInsert.length === 0 ? offset : limit;
+        if (milestones.length > 0) {
+            console.log(milestones.length);
+            const [label, milestoneLimit] = milestones[milestones.length - 1];
 
             if (chunkWordsNumber + words.length > milestoneLimit) {
-                totalMilestones -= 1;
-                chunkWordsNumber = words.length;
+                milestones.pop();
 
-                let label = "Milestone";
-
-                if (offset !== 0 && totalMilestones === 1) {
-                    label = "Offset";
-                    actualOffset = totalWords;
+                if (label == "Offset") {
+                    actualOffset = chunkWordsNumber;
                 }
+
+                chunkWordsNumber = words.length;
 
                 const milestone = createMilestoneElement(totalWords, label);
                 toInsert.push([milestone, textNode]);
@@ -133,7 +132,7 @@ async function chunkTextUnderNode(rootElem, ctx = globalCtx()) {
         }
     }
 
-    toInsert.push([createMilestoneElement(totalWords), null])
+    toInsert.push([createMilestoneElement(totalWords, "Chapter end"), null])
 
     for (const [milestone, elem] of toInsert) {
         const parent = elem?.parentNode ?? rootElem;
