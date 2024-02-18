@@ -1,6 +1,6 @@
 function globalCtx() {
     return document.ctx ?? {
-        offset: 3365,
+        offset: 0,
         limit: 3500,
     };
 }
